@@ -47,8 +47,33 @@ address={"0x80":"game_clock", "0x81":"shot_clock", "0x82":"team_scores", "0x83":
          "0x95":"time_of_the_day","0x96":"hi_res_chrono", "0xA0":"left_player1","0xA1":"left_player2", 
          "0xA2":"left_player3","0xA3":"left_player4", "0xA4":"left_player5","0xA5":"left_player6",
          "0xA6":"left_player7","0xA7":"left_player8", "0xA8":"left_player9","0xA9":"left_player10",
-         "0xAA":"left_player11", "0xAB":"left_player12","0xAC":"left_player13","0xAD":"left_player14", "":"","":"","":"", "":"","":"","":"", "":"","":"","":"", "":"","":"","":"", "":"","":"","":"", "":"","":"","":"", "":"","":"","":"", "":"",
-         "":"", "":"","":"", "":"","":"", "":"",}
-with serial.Serial('/dev/ttyS1', baudrate=19200, bytesize="EIGHTBITS", stopbits="STOPBITS_ONE", parity="PARITY_ODD",timeout=1) as ser:
-  x = ser.read()          # read one byte
-  
+         "0xAA":"left_player11", "0xAB":"left_player12","0xAC":"left_player13","0xAD":"left_player14", "0xAE":"left_player15",
+         "0xB0":"right_player1","0xB1":"right_player2", "0xB2":"right_player3","0xB3":"right_player4","0xB4":"right_player5", 
+         "0xB5":"right_player6","0xB6":"right_player7","0xB7":"right_player8", "0xB8":"right_player9","0xB9":"right_player10",
+         "0xBA":"right_player11", "0xBB":"right_player12","0xBC":"right_player13","0xBD":"right_player14", "0xBE":"right_player15",
+         "0xC0":"left_player1_fauls_point","0xC1":"left_player2_fauls_point", "0xC2":"left_player3_fauls_point","0xC3":"left_player4_fauls_point",
+         "0xC4":"left_player5_fauls_point", "0xC5":"left_player6_fauls_point", "0xC6":"left_player7_fauls_point", "0xC7":"left_player8_fauls_point",
+         "0xC8":"left_player9_fauls_point", "0xC9":"left_player10_fauls_point","0xCA":"left_player11_fauls_point", "0xCB":"left_player12_fauls_point", 
+         "0xCC":"left_player13_fauls_point", "0xCD":"left_player14_fauls_point","0xCE":"left_player15_fauls_point", "0xD0":"right_player1_fouls_point",
+         "0xD1":"right_player2_fouls_point", "0xD2":"right_player3_fouls_point", "0xD3":"right_player4_fouls_point", "0xD4":"right_player5_fouls_point",
+         "0xD5":"right_player6_fouls_point", "0xD6":"right_player7_fouls_point","0xD7":"right_player8_fouls_point", "0xD8":"right_player9_fouls_point",
+         "0xD9":"right_player10_fouls_point", "0xDA":"right_player11_fouls_point","0xDB":"right_player12_fouls_point", "0xDC":"right_player13_fouls_point",
+         "0xDD":"right_player14_fouls_point", "0xDE":"right_player5_fouls_point", "0xF0":"scoreboard_brigtness_sport"}
+with serial.Serial('/dev/ttyS1', baudrate=19200, bytesize="EIGHTBITS", stopbits="STOPBITS_ONE", parity="PARITY_ODD",timeout=60) as ser:
+        while True:
+                x = srt(ser.read())          # read one byte
+                if x in address:
+                        tabella = address[x]            #il nome della tabella del tabellone
+                        print(componi_stringa(x, tabella))
+                        
+                        
+def componi_stringa(x, tabella):
+        hex_string = x[2:]
+        bytes_object = bytes.fromhex(hex_string)
+        ascii_string = bytes_object.decode("ASCII")
+        if ascii_string.isnumeric():
+                indirizzo = int(ascii_string)
+        else:
+                print("non funziona qualcosa")
+                
+        
