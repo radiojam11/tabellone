@@ -39,7 +39,16 @@
 parity=serial.PARITY_EVEN, rtscts=1
 
 import serial
-address={"game_clock":"0x80", "shot_clock":"0x81", "team_scores":"0x82" }
+address={"0x80":"game_clock", "0x81":"shot_clock", "0x82":"team_scores", "0x83":"team_fouls", 
+         "0x84":"left_penality1", "0x85":"left_penality2", "0x86":"left_penality3", "0x87":"left_penality4", 
+         "0x88":"left_penality5", "0x89":"right_penality1","0x8A":"right_penality2", "0x8B":"right_penality3",
+         "0x8C":"right_penality4", "0x8D":"right_penality5","0x8E":"set1_score", "0x8F":"setg2_score",
+         "0x90":"set3_Score", "0x91":"set4_score","0x92":"team_name_left", "0x93":"team_name_right","0x94":"horns",
+         "0x95":"time_of_the_day","0x96":"hi_res_chrono", "0xA0":"left_player1","0xA1":"left_player2", 
+         "0xA2":"left_player3","0xA3":"left_player4", "0xA4":"left_player5","0xA5":"left_player6",
+         "0xA6":"left_player7","0xA7":"left_player8", "0xA8":"left_player9","0xA9":"left_player10",
+         "0xAA":"left_player11", "0xAB":"left_player12","0xAC":"left_player13","0xAD":"left_player14", "":"","":"","":"", "":"","":"","":"", "":"","":"","":"", "":"","":"","":"", "":"","":"","":"", "":"","":"","":"", "":"","":"","":"", "":"",
+         "":"", "":"","":"", "":"","":"", "":"",}
 with serial.Serial('/dev/ttyS1', baudrate=19200, bytesize="EIGHTBITS", stopbits="STOPBITS_ONE", parity="PARITY_ODD",timeout=1) as ser:
   x = ser.read()          # read one byte
   
