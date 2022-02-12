@@ -36,7 +36,7 @@
 
 
 """
-parity=serial.PARITY_EVEN, rtscts=1
+
 
 import serial
 address={"0x80":"game_clock", "0x81":"shot_clock", "0x82":"team_scores", "0x83":"team_fouls", 
@@ -60,7 +60,7 @@ address={"0x80":"game_clock", "0x81":"shot_clock", "0x82":"team_scores", "0x83":
          "0xD9":"right_player10_fouls_point", "0xDA":"right_player11_fouls_point","0xDB":"right_player12_fouls_point", "0xDC":"right_player13_fouls_point",
          "0xDD":"right_player14_fouls_point", "0xDE":"right_player5_fouls_point", "0xF0":"scoreboard_brigtness_sport"}
 #RICORDATI DI SISTEMARE IL NOME DELLA SERIALE CON QUELLO CORRETTO
-with serial.Serial('/dev/ttyS1', baudrate=19200, bytesize="EIGHTBITS", stopbits="STOPBITS_ONE", parity="PARITY_ODD",timeout=60) as ser:
+with serial.Serial('/dev/ttyS1', baudrate=19200, bytesize=8, stopbits="STOPBITS_ONE", parity="PARITY_ODD",timeout=60) as ser:
         while True:
                 x = str(ser.read())          # read one byte
                 if x in address:
