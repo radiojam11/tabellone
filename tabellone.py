@@ -1,4 +1,6 @@
 """
+Indirizza da manuale:
+
 [0x80] Game clock + Possession + Timeout
 [0x81] Shot clock + Timeout
 [0x82] Team scores + Period + Bonus
@@ -38,43 +40,102 @@
 """
 
 
+
 import serial
-address={"0x80":"game_clock", "0x81":"shot_clock", "0x82":"team_scores", "0x83":"team_fouls", 
-         "0x84":"left_penality1", "0x85":"left_penality2", "0x86":"left_penality3", "0x87":"left_penality4", 
-         "0x88":"left_penality5", "0x89":"right_penality1","0x8A":"right_penality2", "0x8B":"right_penality3",
-         "0x8C":"right_penality4", "0x8D":"right_penality5","0x8E":"set1_score", "0x8F":"setg2_score",
-         "0x90":"set3_Score", "0x91":"set4_score","0x92":"team_name_left", "0x93":"team_name_right","0x94":"horns",
-         "0x95":"time_of_the_day","0x96":"hi_res_chrono", "0xA0":"left_player1","0xA1":"left_player2", 
-         "0xA2":"left_player3","0xA3":"left_player4", "0xA4":"left_player5","0xA5":"left_player6",
-         "0xA6":"left_player7","0xA7":"left_player8", "0xA8":"left_player9","0xA9":"left_player10",
-         "0xAA":"left_player11", "0xAB":"left_player12","0xAC":"left_player13","0xAD":"left_player14", "0xAE":"left_player15",
-         "0xB0":"right_player1","0xB1":"right_player2", "0xB2":"right_player3","0xB3":"right_player4","0xB4":"right_player5", 
-         "0xB5":"right_player6","0xB6":"right_player7","0xB7":"right_player8", "0xB8":"right_player9","0xB9":"right_player10",
-         "0xBA":"right_player11", "0xBB":"right_player12","0xBC":"right_player13","0xBD":"right_player14", "0xBE":"right_player15",
-         "0xC0":"left_player1_fauls_point","0xC1":"left_player2_fauls_point", "0xC2":"left_player3_fauls_point","0xC3":"left_player4_fauls_point",
-         "0xC4":"left_player5_fauls_point", "0xC5":"left_player6_fauls_point", "0xC6":"left_player7_fauls_point", "0xC7":"left_player8_fauls_point",
-         "0xC8":"left_player9_fauls_point", "0xC9":"left_player10_fauls_point","0xCA":"left_player11_fauls_point", "0xCB":"left_player12_fauls_point", 
-         "0xCC":"left_player13_fauls_point", "0xCD":"left_player14_fauls_point","0xCE":"left_player15_fauls_point", "0xD0":"right_player1_fouls_point",
-         "0xD1":"right_player2_fouls_point", "0xD2":"right_player3_fouls_point", "0xD3":"right_player4_fouls_point", "0xD4":"right_player5_fouls_point",
-         "0xD5":"right_player6_fouls_point", "0xD6":"right_player7_fouls_point","0xD7":"right_player8_fouls_point", "0xD8":"right_player9_fouls_point",
-         "0xD9":"right_player10_fouls_point", "0xDA":"right_player11_fouls_point","0xDB":"right_player12_fouls_point", "0xDC":"right_player13_fouls_point",
-         "0xDD":"right_player14_fouls_point", "0xDE":"right_player5_fouls_point", "0xF0":"scoreboard_brigtness_sport"}
+from hexdump import hexdump
+
+address={0x80:("game_clock", 12), 0x81:("shot_clock", 12), 0x82:("team_scores", 12), 0x83:("team_fouls", 12), 
+         0x84:("left_penality1", 12), 0x85:("left_penality2", 12), 0x86:("left_penality3", 12), 0x87:("left_penality4", 12), 
+         0x88:("left_penality5", 12), 0x89:("right_penality1", 12),0x8A:("right_penality2", 12), 0x8B:("right_penality3", 12),
+         0x8C:("right_penality4", 12), 0x8D:("right_penality5", 12),0x8E:("set1_score", 12), 0x8F:("setg2_score", 12),
+         0x90:("set3_Score", 12), 0x91:("set4_score", 12),0x92:("team_name_left", 14), 0x93:("team_name_right", 14),0x94:("horns", 12),
+         0x95:("time_of_the_day", 12),0x96:("hi_res_chrono", 12), 0xA0:("left_player1", 14),0xA1:("left_player2", 14), 
+         0xA2:("left_player3", 14),0xA3:("left_player4", 14), 0xA4:("left_player5", 14),0xA5:("left_player6", 14),
+         0xA6:("left_player7", 14),0xA7:("left_player8", 14), 0xA8:("left_player9", 14),0xA9:("left_player10", 14),
+         0xAA:("left_player11", 14), 0xAB:("left_player12", 14),0xAC:("left_player13", 14),0xAD:("left_player14", 14), 
+         0xAE:("left_player15", 14),
+         0xB0:("right_player1", 14),0xB1:("right_player2", 14), 0xB2:("right_player3", 14),0xB3:("right_player4", 14),
+         0xB4:("right_player5", 14), 
+         0xB5:("right_player6", 12),0xB6:("right_player7", 14),0xB7:("right_player8", 14), 0xB8:("right_player9", 14),
+         0xB9:("right_player10", 14),
+         0xBA:("right_player11", 14), 0xBB:("right_player12", 14),0xBC:("right_player13", 14),0xBD:("right_player14", 14), 
+         0xBE:("right_player15", 14),
+         0xC0:("left_player1_fauls_point", 12),0xC1:("left_player2_fauls_point", 12), 0xC2:("left_player3_fauls_point", 12),
+         0xC3:("left_player4_fauls_point", 12),
+         0xC4:("left_player5_fauls_point", 12), 0xC5:("left_player6_fauls_point", 12), 0xC6:("left_player7_fauls_point", 12), 
+         0xC7:("left_player8_fauls_point", 12),
+         0xC8:("left_player9_fauls_point", 12), 0xC9:("left_player10_fauls_point", 12),0xCA:("left_player11_fauls_point", 12), 
+         0xCB:("left_player12_fauls_point", 12), 
+         0xCC:("left_player13_fauls_point", 12), 0xCD:("left_player14_fauls_point", 12),0xCE:("left_player15_fauls_point", 12), 
+         0xD0:("right_player1_fouls_point", 12), 
+         0xD1:("right_player2_fouls_point", 12), 0xD2:("right_player3_fouls_point", 12), 0xD3:("right_player4_fouls_point", 12), 
+         0xD4:("right_player5_fouls_point", 12),
+         0xD5:("right_player6_fouls_point", 12), 0xD6:("right_player7_fouls_point", 12),0xD7:("right_player8_fouls_point", 12), 
+         0xD8:("right_player9_fouls_point", 12),
+         0xD9:("right_player10_fouls_point", 12), 0xDA:("right_player11_fouls_point", 12),0xDB:("right_player12_fouls_point", 12), 
+         0xDC:("right_player13_fouls_point", 12),
+         0xDD:("right_player14_fouls_point", 12), 0xDE:("right_player5_fouls_point", 12), 0xF0:("scoreboard_brigtness_sport", 12)}
+
+
+def controllo_lrc(indirizzo_ricevuto,payload_ricevuto, lrc):
+        t=indirizzo_ricevuto
+        for el in payload_ricevuto:
+                t+=el
+        a = t & 0b01111111
+        if a==lrc:
+                return True
+
+        return False
+
 #RICORDATI DI SISTEMARE IL NOME DELLA SERIALE CON QUELLO CORRETTO
-with serial.Serial('/dev/ttyS1', baudrate=19200, bytesize=8, stopbits="STOPBITS_ONE", parity="PARITY_ODD",timeout=60) as ser:
+
+with serial.Serial('COM4', baudrate=19200, bytesize=8, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=60) as ser:
         while True:
-                x = str(ser.read())          # read one byte
-                if x in address:
-                        tabella = address[x]            #il nome della tabella del tabellone
-                        print(componi_stringa(x, tabella))
-                        
-                        
-def componi_stringa(x, tabella):
-        hex_string = x[2:]
-        bytes_object = bytes.fromhex(hex_string)
-        ascii_string = bytes_object.decode("ASCII")
-        if ascii_string.isnumeric():
-                indirizzo = int(ascii_string)
-        else:
-                print("non funziona qualcosa")
+                indirizzo_ricevuto = ser.read()          # read one byte
                 
+                if indirizzo_ricevuto not in address.keys():
+                        continue
+
+                nome, packet_length = address[indirizzo_ricevuto]
+                
+                payload_ricevuto = ser.read(packet_length-2, timeout=3)
+                lrc = ser.read()
+
+                print(f"Printing hexdump for {nome}, per indirizzo: {indirizzo_ricevuto}")
+                hexdump(payload_ricevuto)
+                if controllo_lrc(indirizzo_ricevuto, payload_ricevuto, lrc):
+                        print("Anche LRC combacia perfettamente!!")
+
+
+        
+
+
+""" 
+    A="testaaawewqeqwewqeq\x00\x00".encode()    encode codifica in binario
+    hexdump(A)  A e' una stringa e hexedump mi rende la visualizzazione in esadecimale della stringa binaria
+ 936 & 0b01111111  da applicare  al numero ricavato dalla somma per prendere solo gli ultimi due 
+ NUMERO & 0b01111111   LO 0 A DX DEL b PORTA A ZERO LA CIFRA CHE TROVA NEL NUMERO MENTRE GLI 1 LA LASCIANO DEL SUO VALORE (SOMMA AND LOGICO)
+ LA QUANTITA DEI NUMERI A DX DEL b CORRISPONDE ALLA QUANTITA DEI NUMERI PRESI NI CONSIDERAZIONE
+
+int.from_bytes(b'\x34','big') == 0x34 == 52 == ord('4') != 4
+
+>>> payload = B'PLAYERNAME'     
+>>> t = 0xba
+>>> for c in payload: 
+...   t+=c            
+... 
+
+>>> t
+936
+>>> t & 0b01111111
+40
+>>> payload
+b'PLAYERNAME'
+>>> b'\xba'+payload 
+b'\xbaPLAYERNAME'
+
+
+«
+    
+"""            
         
