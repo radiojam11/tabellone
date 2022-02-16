@@ -43,6 +43,7 @@ Indirizza da manuale:
 
 import serial
 from hexdump import hexdump
+import pickle
 
 address={0x80:("game_clock", 12), 0x81:("shot_clock", 12), 0x82:("team_scores", 12), 0x83:("team_fouls", 12), 
          0x84:("left_penality1", 12), 0x85:("left_penality2", 12), 0x86:("left_penality3", 12), 0x87:("left_penality4", 12), 
@@ -76,38 +77,33 @@ address={0x80:("game_clock", 12), 0x81:("shot_clock", 12), 0x82:("team_scores", 
          0xDC:("right_player13_fouls_point", 12),
          0xDD:("right_player14_fouls_point", 12), 0xDE:("right_player5_fouls_point", 12), 0xF0:("scoreboard_brigtness_sport", 12)}
 
-
-def controllo_lrc(indirizzo_ricevuto,payload_ricevuto, lrc):
-        t=indirizzo_ricevuto
-        for el in payload_ricevuto:
-                t+=el
-        a = t & 0b01111111
-        if a==lrc:
-                return True
-
-        return False
-
 #RICORDATI DI SISTEMARE IL NOME DELLA SERIALE CON QUELLO CORRETTO
 
-with serial.Serial('COM4', baudrate=19200, bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=60) as ser:
+with serial.Serial('COM5', baudrate=19200, bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=15) as ser:
+        raw = []
         while True:
                 indirizzo_ricevuto = ser.read()          # read one byte
                 
-                if indirizzo_ricevuto not in address.keys():
+                if indirizzo_ricevuto not in address.keys():   # se non e' un indirizzo conosciuto ritorna a leggere
                         continue
-
+                # se siamo qui abbiamo ricevuto uun indirizzo valido, quindi adesso vediamo quanti byte dobbiamo prendere
                 nome, packet_length = address[indirizzo_ricevuto]
-                
+                # adesso prendiamo tutti i byte del messaggio insieme nella variabile payload_ricevuto
                 payload_ricevuto = ser.read(packet_length-2, timeout=3)
+                # prendo a parte il codice di controllo per fare poi le verifiche
                 lrc = ser.read()
-
+                # e stampo un hexdump di quello che ho ricevuto
                 print(f"Printing hexdump for {nome}, per indirizzo: {indirizzo_ricevuto}")
                 hexdump(payload_ricevuto)
-                """"
-                if controllo_lrc(indirizzo_ricevuto, payload_ricevuto, lrc):
-                        print("Anche LRC combacia perfettamente!!")
-                """
-                
+                hexdump(lrc)
+                # salvo la lista dei messaggi ricevuti sul file
+                raw.append(indirizzo_ricevuto)
+                raw.append(payload_ricevuto)
+                raw.append(lrc)
+                file = open('dati.bin', 'wb')
+                pickle.dump(raw, file)
+                file.close()
+
 
         
 
