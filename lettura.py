@@ -80,26 +80,30 @@ address={0x80:("game_clock", 12), 0x81:("shot_clock", 12), 0x82:("team_scores", 
 #RICORDATI DI SISTEMARE IL NOME DELLA SERIALE CON QUELLO CORRETTO
 
 with serial.Serial('COM5', baudrate=19200, bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=15) as ser:
+        print("inizializzata la seriale")
         raw = []
         while True:
                 indirizzo_ricevuto = ser.read()          # read one byte
-                
+                """
                 if indirizzo_ricevuto not in address.keys():   # se non e' un indirizzo conosciuto ritorna a leggere
+                        print("non riconosco il pacchetto come indirizzo")
                         continue
+                """
+                print("ho BECCATO indirizzo")
                 # se siamo qui abbiamo ricevuto uun indirizzo valido, quindi adesso vediamo quanti byte dobbiamo prendere
-                nome, packet_length = address[indirizzo_ricevuto]
+                #nome, packet_length = address[indirizzo_ricevuto]
                 # adesso prendiamo tutti i byte del messaggio insieme nella variabile payload_ricevuto
-                payload_ricevuto = ser.read(packet_length-2, timeout=3)
+                payload_ricevuto = ser.read()
                 # prendo a parte il codice di controllo per fare poi le verifiche
-                lrc = ser.read()
+                #lrc = ser.read()
                 # e stampo un hexdump di quello che ho ricevuto
-                print(f"Printing hexdump for {nome}, per indirizzo: {indirizzo_ricevuto}")
+                #print(f"Printing hexdump for {nome}, per indirizzo: {indirizzo_ricevuto}")
                 hexdump(payload_ricevuto)
-                hexdump(lrc)
+                #hexdump(lrc)
                 # salvo la lista dei messaggi ricevuti sul file
                 raw.append(indirizzo_ricevuto)
-                raw.append(payload_ricevuto)
-                raw.append(lrc)
+                #raw.append(payload_ricevuto)
+                #raw.append(lrc)
                 file = open('dati.bin', 'wb')
                 pickle.dump(raw, file)
                 file.close()
