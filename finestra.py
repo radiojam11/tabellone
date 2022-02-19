@@ -1,13 +1,14 @@
 from itertools import permutations
 import tkinter as tk
 from tkinter import ttk
+from datetime import datetime
 
 team_left = "Grosseto A.S."
 team_right = "Roccacannuccia"
 periodo = 3
 team_scoreL = 39
 team_scoreR = 119
-tempo = "49:03"
+tempo = datetime.now().strftime('%H:%M:%S')
 falliL = 3
 falliR = 5
 
@@ -17,9 +18,14 @@ colore_punti = "#E85811"
 colore_tempo = "#31A745"
 
 
+def aggiorna():
+    tempo = datetime.now().strftime('%H:%M:%S')
+    timerpartita.config(text=tempo)
+    root.after(200, aggiorna)
+
 # root window
 root = tk.Tk()
-root.geometry("1240x800")
+root.geometry("1200x800")
 root.title('Tabellone')
 root.resizable(0, 0)
 
@@ -66,4 +72,6 @@ faulsL_label.grid(column=0, row=3,  padx=5, pady=5)
 faulsR_label = ttk.Label(root, text=falliR, font=(carattere, 130), foreground=colore_punti)
 faulsR_label.grid(column=2, row=3,  padx=5, pady=5)
 
+aggiorna()
 root.mainloop()
+
