@@ -10,18 +10,16 @@ from datetime import datetime
 from random import *
 from threading import Thread
 
-minuti = datetime.now().strftime('%M:%S')
 #VARIABILI  (da prelevare da flusso dati)
 addr_diz={
 "team_left" : "Grosseto A.S.",
 "team_right" : "Roccacannuccia",
-"periodo" : 3,
-"team_scoreL" : 139,
-"team_scoreR" : 119,
-"tempo" : minuti,
-"falliL" : 3,
-"falliR" : 5
-}
+"periodo" : "3",
+"team_scoreL" : "139",
+"team_scoreR" : " 19",
+"tempo" : "03:22",
+"falliL" : " 3",
+"falliR" : " 5"}
 
 # FONT
 carattere = "Digital-7"
@@ -33,18 +31,19 @@ colore_punti = "#E85811"
 colore_tempo = "#31A745"
 
 
-def aggiorna():
+def aggiornaGUI():
     # AGGANCIARE QUI LE VARIABILI AL FLUSSO DEI DATI
     team_nameL_label.config(text=addr_diz["team_left"])
     team_nameR_label.config(text=addr_diz["team_right"])
     team_scoreL_label.config(text=addr_diz["team_scoreL"])
     team_scoreR_label.config(text=addr_diz["team_scoreR"])
     periodo_label.config(text=addr_diz["periodo"])
-    timerpartita.config(text=addr_diz["tempo"])
+    timerpartita.config(text= datetime.now().strftime('%M:%S')) # in fase di test per muovere il tabellone - ppoi rimettere la riga sotto
+    #timerpartita.config(text=addr_diz["tempo"])
     faulsL_label.config(text=addr_diz["falliL"])
     faulsR_label.config(text=addr_diz["falliR"])
     
-    root.after(1000, aggiorna)
+    root.after(1000, aggiornaGUI)
 
 # root window
 root = tk.Tk()
@@ -110,7 +109,7 @@ class XThread (Thread):
 thread1 = XThread("Gestione Dati da RS485")
 thread1.start()
 thread1.join()
-aggiorna()
+aggiornaGUI()
 root.mainloop()
 
 
