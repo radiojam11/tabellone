@@ -1,5 +1,5 @@
 import pickle
-infile = open('1dati.bin','rb')
+infile = open('4dato.bin','rb')
 dati = pickle.load(infile)
 infile.close()
 print(dati)

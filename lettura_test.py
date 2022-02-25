@@ -79,11 +79,11 @@ address={0x80:("game_clock", 12), 0x81:("shot_clock", 12), 0x82:("team_scores", 
 
 #RICORDATI DI SISTEMARE IL NOME DELLA SERIALE CON QUELLO CORRETTO
 
-with serial.Serial('COM5', baudrate=19200, bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=15) as ser:
+with serial.Serial('COM4', baudrate=19200, bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=15) as ser:
         print("inizializzata la seriale")
         raw = []
-        for a in range(5):
-                for i in range(4096):
+        for a in range(15,40, 1):
+                for i in range(40960):
                         dato = ser.read()          # read one byte
                 
                         # salvo la lista dei messaggi ricevuti sul file
