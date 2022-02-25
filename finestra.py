@@ -102,7 +102,7 @@ class XThread (Thread):
       self.name = nome
    def run(self):
       print ("Thread '" + self.name + "' avviato")
-
+      
       
 
 
