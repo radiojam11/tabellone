@@ -9,6 +9,7 @@ from tkinter import ttk
 from datetime import datetime
 from random import *
 from threading import Thread
+import serial
 
 #VARIABILI  (da prelevare da flusso dati)
 addr_diz={
@@ -43,7 +44,7 @@ def aggiornaGUI():
     faulsL_label.config(text=addr_diz["falliL"])
     faulsR_label.config(text=addr_diz["falliR"])
     
-    root.after(1000, aggiornaGUI)
+    root.after(100, aggiornaGUI)
 
 # root window
 root = tk.Tk()
@@ -102,13 +103,21 @@ class XThread (Thread):
       self.name = nome
    def run(self):
       print ("Thread '" + self.name + "' avviato")
+      #with serial.Serial('COM5', baudrate=19200, bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=15) as ser:
+      #   while True:
+      #      print('ricevo dato.......................')
+      #      dato = ser.read()          # read one byte
+
+
 
       
 
 
 thread1 = XThread("Gestione Dati da RS485")
 thread1.start()
+print('sono qui dopo start')
 thread1.join()
+print('sono qui dopo join')
 aggiornaGUI()
 root.mainloop()
 
