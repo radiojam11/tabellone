@@ -103,6 +103,7 @@ class XThread (Thread):
       self.name = nome
    def run(self):
       print ("Thread '" + self.name + "' avviato")
+<<<<<<< HEAD
       #with serial.Serial('COM5', baudrate=19200, bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=15) as ser:
       #   while True:
       #      print('ricevo dato.......................')
@@ -110,6 +111,9 @@ class XThread (Thread):
 
 
 
+=======
+      
+>>>>>>> a252d984918e0420e71429c0d9696b6e89a5ad67
       
 
 
