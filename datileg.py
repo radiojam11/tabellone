@@ -1,7 +1,15 @@
 import pickle
 from pyrsistent import b
 
-
+address_ridotto = {
+    b"\x80":("game_clock", 12),
+    b"\x82":("team_scores", 12),
+    b"\x83":("team_fouls", 12),
+    b"\x92":("team_name_left", 14),
+    b"\x93":("team_name_right", 14),
+    b"\x96":("hi_res_chrono", 12)
+    
+}
 
 address={b"\x80":("game_clock", 12),b"\x81":("shot_clock", 12), b"\x82":("team_scores", 12), b"\x83":("team_fouls", 12), 
          b"\x84":("left_penality1", 12), 
@@ -43,11 +51,11 @@ dati = pickle.load(infile)
 infile.close()
 print(dati)
 n = len(dati)
-print(n)
+#print(n)
 for i in range(n-1):
     el = dati.pop(0)
     #print(int.from_bytes(el, 'big'))
-    if el not in address.keys():
+    if el not in address_ridotto.keys():
         continue
     if el == b'\xa2' :
         continue
