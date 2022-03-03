@@ -1,54 +1,92 @@
 # TecnoGeppetto 2022 sistema di lettura dati da Tabellone Sportivo
 # i dati sono ricostruiti in un tabellone "digitale" su GUI
 #
+
 # GUI e visualizzazione
 
+from re import A
 import tkinter as tk
 from tkinter import ttk
-# qui sotto solo per DEMO finche' non si aggancia al flusso dati
-from datetime import datetime
-from random import *
-from threading import Thread
-import serial
+import serial , funzioni
+import os
+from time import time
 
-#VARIABILI  (da prelevare da flusso dati)
+
+# INDIRIZZI DEL MESSAGGIO INTERCETTATO
+address_rid = {
+    b"\x80":("game_clock", 12),
+    b"\x82":("team_scores", 12),
+    b"\x83":("team_fouls", 12),
+    b"\x92":("team_name_left", 14),
+    b"\x93":("team_name_right", 14)
+}
+
+# VARIABILI  (da prelevare da flusso dati)
 addr_diz={
-"team_left" : "Grosseto A.S.",
-"team_right" : "Roccacannuccia",
-"periodo" : "3",
-"team_scoreL" : "139",
-"team_scoreR" : " 19",
-"tempo" : "03:22",
-"falliL" : " 3",
-"falliR" : " 5"}
+   "team_left" : "Grosseto A.S.",
+   "team_right" : "Roccacannuccia",
+   "periodo" : "0",
+   "team_scoreL" : "139",
+   "team_scoreR" : " 19",
+   "tempo" : "22:22",
+   "falliL" : " 3",
+   "falliR" : " 5"
+}
 
 # FONT
 carattere = "Digital-7"
 #carattere = "Helvetica"
 
-#COLORI
+# COLORI
 colore_team = "#06B5C3"
 colore_punti = "#E85811"
 colore_tempo = "#31A745"
 
+# STAMPO LA LISTA DELLE SERIALI A VIDEO e  CHIEDO IMMISSIONE DEL NOME DELLA PORTA CORRETTA
+funzioni.ser_dispo()
+print("\n\n- Scegli quella che corrisponde alla interfaccia chiamata:\n USB-SERIAL CH340 \n per esempio COM3\n")
+nome_serial = input("\n\nScrivi il nome della seriale scelta\n Per esempio: COM3 \nvedi i nomi disponibili qui sopra\n FAI ATTENZIONE ALLE MAIUSCOLE \nDIGITA -->")
 
+# ************************************  GUI *********************************
+ser = serial.Serial(nome_serial, baudrate=19200, bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=15)
+ser.flush()
 def aggiornaGUI():
-    # AGGANCIARE QUI LE VARIABILI AL FLUSSO DEI DATI
-    team_nameL_label.config(text=addr_diz["team_left"])
-    team_nameR_label.config(text=addr_diz["team_right"])
-    team_scoreL_label.config(text=addr_diz["team_scoreL"])
-    team_scoreR_label.config(text=addr_diz["team_scoreR"])
-    periodo_label.config(text=addr_diz["periodo"])
-    timerpartita.config(text= datetime.now().strftime('%M:%S')) # in fase di test per muovere il tabellone - ppoi rimettere la riga sotto
-    #timerpartita.config(text=addr_diz["tempo"])
-    faulsL_label.config(text=addr_diz["falliL"])
-    faulsR_label.config(text=addr_diz["falliR"])
-    
-    root.after(100, aggiornaGUI)
+      star = time()
+      ser.flush()       # pulisco la coda sella seriale
+      mes = ser.read()  # leggo il primo byte nella coda della seriale
+      
+      if mes in address_rid.keys():    # se è un indirizzo valido prendo il numero di bytes pari alla lunghezza del messaggio 
+             #                         # che conosco e lo faccio processare da funzioni.handle_funz
+             nome, packet_length = address_rid[mes]
+             print(nome)
+             messaggio = ser.read(packet_length-1) # l'indirizzo che fa parte della lunghezza del messaggio l'ho già preso
+             messaggio = messaggio[:-1]            # per il momento tolgo anche il CRC in fondo al messaggio  * per ora non faccio il controllo dell'errore
+             print(messaggio)
+             x =(funzioni.handle_funz(nome , messaggio)) # lavoro il messaggio con il file funzioni per ottenere un dizionario con le Key aggiornate
+             # aggiorno il dizionario addr_diz da cui legge la GUI
+             for key in x.keys():
+                    addr_diz[key] = x[key]
+      
+             
+      # aggiorno i dati sulla GUI
+      team_nameL_label.config(text=addr_diz["team_left"])
+      team_nameR_label.config(text=addr_diz["team_right"])
+      team_scoreL_label.config(text=addr_diz["team_scoreL"])
+      team_scoreR_label.config(text=addr_diz["team_scoreR"])
+      periodo_label.config(text=addr_diz["periodo"])
+      timerpartita.config(text=addr_diz["tempo"])
+      faulsL_label.config(text=addr_diz["falliL"])
+      faulsR_label.config(text=addr_diz["falliR"])
+      
+      end = time()
+      if (end - star)>0.1:
+         print("Time---: ", end - star)
+
+      root.after(1, aggiornaGUI)
 
 # root window
 root = tk.Tk()
-root.geometry("1200x800")
+root.geometry("1100x800")
 root.title('Tabellone by TecnoGeppetto')
 root.resizable(0, 0)
 root['bg'] = 'black'
@@ -84,44 +122,20 @@ periodo_label = ttk.Label(root, text="", font=(carattere, 90),background='black'
 periodo_label.grid(column=1, row=1 ,  padx=5, pady=5)
 
 # Timer
-timerpartita = ttk.Label(root, text="", font=(carattere, 180),background='black', foreground=colore_tempo)
+timerpartita = ttk.Label(root, text="", font=(carattere, 240),background='black', foreground=colore_tempo)
 timerpartita.grid(column=0, columnspan=3 , row=2 ,  padx=5, pady=5)
 
 # FAULS LEFT
-faulsL_label = ttk.Label(root, text="", font=(carattere, 180),background='black', foreground=colore_punti)
+faulsL_label = ttk.Label(root, text="", font=(carattere, 120),background='black', foreground=colore_punti)
 faulsL_label.grid(column=0, row=3,  padx=5, pady=5)
 # sticky=tk.EW,
 
 # FAULS RIGHT
-faulsR_label = ttk.Label(root, text="", font=(carattere, 180),background='black', foreground=colore_punti)
+faulsR_label = ttk.Label(root, text="", font=(carattere, 120),background='black', foreground=colore_punti)
 faulsR_label.grid(column=2, row=3,  padx=5, pady=5)
 
+# ******************************************  GUI END *********************************
 
-class XThread (Thread):
-   def __init__(self, nome):
-      Thread.__init__(self)
-      self.name = nome
-   def run(self):
-      print ("Thread '" + self.name + "' avviato")
-<<<<<<< HEAD
-      #with serial.Serial('COM5', baudrate=19200, bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=15) as ser:
-      #   while True:
-      #      print('ricevo dato.......................')
-      #      dato = ser.read()          # read one byte
-
-
-
-=======
-      
->>>>>>> a252d984918e0420e71429c0d9696b6e89a5ad67
-      
-
-
-thread1 = XThread("Gestione Dati da RS485")
-thread1.start()
-print('sono qui dopo start')
-thread1.join()
-print('sono qui dopo join')
 aggiornaGUI()
 root.mainloop()
 
