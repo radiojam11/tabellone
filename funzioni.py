@@ -1,8 +1,7 @@
 # TecnoGeppetto 2022
 # Contiene le funzioni  che fanno il parsing e compongono il messaggio
 # 
-from ast import Try
-
+import pickle, os
 
 def handle_funz(address, messaggio_byte):
     """ Seleziona la giusta funzione in base all'indirizzo del messaggio"""
@@ -74,9 +73,10 @@ def ser_dispo():
     for port, desc, hwid in sorted(ports):
             porte.append((port, desc))
             print("{}: {} [{}]".format(port, desc, hwid))
-    ok_port="COM3"
-    for el in porte:
-        if  "USB-SERIAL CH340" in el[1]:
+    if not len(porte):  # se non ci sono seriali collegate
+        ok_port="NO PORT"
+    for el in porte:        # per ogni porta trovata
+        if  "USB-SERIAL CH340" in el[1]:        # se la descrizione della porta è quella corretta
             ok_port = el[0]
             break
     
@@ -84,9 +84,15 @@ def ser_dispo():
     scelta = input("Premi INVIO o immetti il nome della seriale -->")
     if scelta == '':
         nome_serial = ok_port
-    elif (scelta,"USB-SERIAL CH340")  in porte:
+    elif (scelta,"USB-SERIAL CH340")  in porte:     # se la scelta è tra le porte collegate...
         nome_serial = scelta
+    else:                                           # se la scelta non è tra le porte collegate alza una eccezione ed esci 
+        print("***********LA PORTA SERIALE SCELTA NON è RICONOSCIUTA***********")
+        raise Exception("Sorry, EXIT")
+    if nome_serial == "NO PORT":
+        raise Exception("Sorry, NON RISULTA COLLEGATA LA SERIALE CORRETTA  EXIT")
     return nome_serial
+
 
 
 def controlla_copia():
@@ -95,14 +101,15 @@ def controlla_copia():
     # Controllo che esista un file config.bin
     try:
         with open('config.bin','rb') as infile :
-            dati = pickle.load(infile)
+            conf = pickle.load(infile)
     except FileNotFoundError as er:
         print("mi dispiace ma questa copia non è autorizzata")
-        pass     
-    
+        raise NameError('No configuration file found!')     
     # leggo il seriale del HD
     f = os.popen('vol')
     s = f.read()
     s=s[s.index(":")+1:-1]
-    print(s)
+    if s != conf:
+        raise NameError('Copia non autorizzata!')
+    print('programma regolare grazie!')
 

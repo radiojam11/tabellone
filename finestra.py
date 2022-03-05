@@ -131,11 +131,12 @@ faulsR_label = ttk.Label(root, text="", font=(carattere, 120),background='black'
 faulsR_label.grid(column=2, row=3,  padx=5, pady=5)
 
 # ******************************************  GUI END *********************************
-
+funzioni.controlla_copia()
+"""
 # STAMPO LA LISTA DELLE SERIALI A VIDEO e  CHIEDO IMMISSIONE DEL NOME DELLA PORTA CORRETTA con funzioni.ser_dispo()
 ser = serial.Serial(funzioni.ser_dispo(), baudrate=19200, bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=15)
 ser.flush()
 aggiornaGUI()
 root.mainloop()
 
-
+"""
