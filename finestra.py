@@ -10,7 +10,7 @@ from tkinter import ttk
 import serial , funzioni
 import os
 from time import time
-
+import pickle
 
 # INDIRIZZI DEL MESSAGGIO INTERCETTATO
 address_rid = {
@@ -23,14 +23,14 @@ address_rid = {
 
 # VARIABILI  (da prelevare da flusso dati)
 addr_diz={
-   "team_left" : "Grosseto A.S.",
-   "team_right" : "Roccacannuccia",
-   "periodo" : "0",
-   "team_scoreL" : "139",
-   "team_scoreR" : " 19",
+   "team_left" : "Squadra a.",
+   "team_right" : "Squadra b.",
+   "periodo" : "1",
+   "team_scoreL" : "001",
+   "team_scoreR" : "000",
    "tempo" : "22:22",
-   "falliL" : " 3",
-   "falliR" : " 5"
+   "falliL" : " 0",
+   "falliR" : " 0"
 }
 
 # FONT
@@ -42,32 +42,11 @@ colore_team = "#06B5C3"
 colore_punti = "#E85811"
 colore_tempo = "#31A745"
 
-# STAMPO LA LISTA DELLE SERIALI A VIDEO e  CHIEDO IMMISSIONE DEL NOME DELLA PORTA CORRETTA
-funzioni.ser_dispo()
-print("\n\n- Scegli quella che corrisponde alla interfaccia chiamata:\n USB-SERIAL CH340 \n per esempio COM3\n")
-nome_serial = input("\n\nScrivi il nome della seriale scelta\n Per esempio: COM3 \nvedi i nomi disponibili qui sopra\n FAI ATTENZIONE ALLE MAIUSCOLE \nDIGITA -->")
 
 # ************************************  GUI *********************************
-ser = serial.Serial(nome_serial, baudrate=19200, bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=15)
-ser.flush()
 def aggiornaGUI():
-      star = time()
-      ser.flush()       # pulisco la coda sella seriale
-      mes = ser.read()  # leggo il primo byte nella coda della seriale
-      
-      if mes in address_rid.keys():    # se è un indirizzo valido prendo il numero di bytes pari alla lunghezza del messaggio 
-             #                         # che conosco e lo faccio processare da funzioni.handle_funz
-             nome, packet_length = address_rid[mes]
-             print(nome)
-             messaggio = ser.read(packet_length-1) # l'indirizzo che fa parte della lunghezza del messaggio l'ho già preso
-             messaggio = messaggio[:-1]            # per il momento tolgo anche il CRC in fondo al messaggio  * per ora non faccio il controllo dell'errore
-             print(messaggio)
-             x =(funzioni.handle_funz(nome , messaggio)) # lavoro il messaggio con il file funzioni per ottenere un dizionario con le Key aggiornate
-             # aggiorno il dizionario addr_diz da cui legge la GUI
-             for key in x.keys():
-                    addr_diz[key] = x[key]
-      
-             
+      #star = time()
+                   
       # aggiorno i dati sulla GUI
       team_nameL_label.config(text=addr_diz["team_left"])
       team_nameR_label.config(text=addr_diz["team_right"])
@@ -78,9 +57,26 @@ def aggiornaGUI():
       faulsL_label.config(text=addr_diz["falliL"])
       faulsR_label.config(text=addr_diz["falliR"])
       
-      end = time()
-      if (end - star)>0.1:
-         print("Time---: ", end - star)
+      # leggo i dati da RS485 e scrivo il dizionario che aggiorna il tabellone
+      ser.flush()       # pulisco la coda sella seriale
+      mes = ser.read()  # leggo il primo byte nella coda della seriale
+      
+      if mes in address_rid.keys():    # se è un indirizzo valido prendo il numero di bytes pari alla lunghezza del messaggio 
+             #                         # che conosco e lo faccio processare da funzioni.handle_funz
+             nome, packet_length = address_rid[mes]
+             #print(nome)
+             messaggio = ser.read(packet_length-1) # l'indirizzo che fa parte della lunghezza del messaggio l'ho già preso
+             messaggio = messaggio[:-1]            # per il momento tolgo anche il CRC in fondo al messaggio  * per ora non faccio il controllo dell'errore
+             print(messaggio)
+             x =(funzioni.handle_funz(nome , messaggio)) # lavoro il messaggio con il file funzioni per ottenere un dizionario con le Key aggiornate
+             # aggiorno il dizionario addr_diz da cui legge la GUI
+             for key in x.keys():
+                    addr_diz[key] = x[key]
+      
+      
+      #end = time()
+      #if (end - star)>0.1:
+      #print("Time---: ", end - star)
 
       root.after(1, aggiornaGUI)
 
@@ -136,6 +132,9 @@ faulsR_label.grid(column=2, row=3,  padx=5, pady=5)
 
 # ******************************************  GUI END *********************************
 
+# STAMPO LA LISTA DELLE SERIALI A VIDEO e  CHIEDO IMMISSIONE DEL NOME DELLA PORTA CORRETTA con funzioni.ser_dispo()
+ser = serial.Serial(funzioni.ser_dispo(), baudrate=19200, bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=15)
+ser.flush()
 aggiornaGUI()
 root.mainloop()
 
