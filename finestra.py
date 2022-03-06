@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import ttk
 import serial , funzioni
 import os
-from time import time
+#from time import time
 import pickle
 
 # INDIRIZZI DEL MESSAGGIO INTERCETTATO
@@ -44,6 +44,12 @@ colore_tempo = "#31A745"
 
 
 # ************************************  GUI *********************************
+
+def benvenuto():
+    team_nameL_label.config(text="Benvenuto")
+    team_nameR_label.config(text="TecnoGeppetto")
+    periodo_label.config(text="by")
+    
 def aggiornaGUI():
       #star = time()
                    
@@ -131,6 +137,7 @@ faulsR_label = ttk.Label(root, text="", font=(carattere, 120),background='black'
 faulsR_label.grid(column=2, row=3,  padx=5, pady=5)
 
 # ******************************************  GUI END *********************************
+benvenuto()
 funzioni.controlla_copia()
 """
 # STAMPO LA LISTA DELLE SERIALI A VIDEO e  CHIEDO IMMISSIONE DEL NOME DELLA PORTA CORRETTA con funzioni.ser_dispo()

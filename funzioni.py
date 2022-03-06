@@ -102,9 +102,14 @@ def controlla_copia():
     try:
         with open('config.bin','rb') as infile :
             conf = pickle.load(infile)
-    except FileNotFoundError as er:
+    except FileNotFoundError:
         print("mi dispiace ma questa copia non è autorizzata")
+        input("premi INVIO per continuare")
         raise NameError('No configuration file found!')     
+    except EOFError :
+        print("mi dispiace file di configurazione non corretto")
+        input("premi INVIO per continuare")
+        raise NameError('File di configurazione non corretto!')   
     # leggo il seriale del HD
     f = os.popen('vol')
     s = f.read()
