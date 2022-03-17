@@ -50,6 +50,11 @@ def benvenuto():
     team_nameR_label.config(text="TecnoGeppetto")
     periodo_label.config(text="by")
     
+def regard():
+    team_nameL_label.config(text="Copia")
+    team_nameR_label.config(text="Registrata")
+    periodo_label.config(text="ok")
+    
 def aggiornaGUI():
       #star = time()
                    
@@ -139,11 +144,10 @@ faulsR_label.grid(column=2, row=3,  padx=5, pady=5)
 # ******************************************  GUI END *********************************
 benvenuto()
 funzioni.controlla_copia()
-"""
+
 # STAMPO LA LISTA DELLE SERIALI A VIDEO e  CHIEDO IMMISSIONE DEL NOME DELLA PORTA CORRETTA con funzioni.ser_dispo()
 ser = serial.Serial(funzioni.ser_dispo(), baudrate=19200, bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_ODD  , timeout=15)
 ser.flush()
 aggiornaGUI()
 root.mainloop()
 
-"""

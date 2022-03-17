@@ -22,7 +22,10 @@ def game_clock(address, messaggio_byte):
     # [0x80] = 128 Game clock + Possession + Timeout
     #if messaggio_byte[0] == b'G' :
         # Chronometer is counting, game time    Address 0x80
-    messaggio_byte = messaggio_byte.decode()
+    try:
+        messaggio_byte = messaggio_byte.decode()
+    except UnicodeDecodeError:
+        return {}
     tempo = "{}{}{}{}{}".format(messaggio_byte[1], messaggio_byte[2],
                                 messaggio_byte[3], messaggio_byte[4],
                                 messaggio_byte[5])
@@ -32,7 +35,10 @@ def game_clock(address, messaggio_byte):
     
 def team_scores(address, messaggio_byte):
     #0x82  =   130 [0x82] Team scores + Period + Bonus
-    messaggio_byte = messaggio_byte.decode()
+    try:
+        messaggio_byte = messaggio_byte.decode()
+    except UnicodeDecodeError:
+        return {}
     left = "{}{}{}".format(messaggio_byte[0],messaggio_byte[1],messaggio_byte[2])
     right = "{}{}{}".format(messaggio_byte[3],messaggio_byte[4],messaggio_byte[5])
     period = "{}".format(messaggio_byte[7])
@@ -40,14 +46,20 @@ def team_scores(address, messaggio_byte):
 
 def team_fouls(address, messaggio_byte):
     # [0x83] = 131 - Team Fouls + Player No. + Player Fouls
-    messaggio_byte = messaggio_byte.decode()
+    try:
+        messaggio_byte = messaggio_byte.decode()
+    except UnicodeDecodeError:
+        return {}
     left = "{}{}".format( messaggio_byte[6], messaggio_byte[7])
     right = "{}{}".format( messaggio_byte[8], messaggio_byte[9])
     return {"falliL":left, "falliR":right}
 
 def team_name_left(address, messaggio_byte):
     # [0x92] = 146  - Team Names (14 bytes)
-    messaggio_byte = messaggio_byte.decode()
+    try:
+        messaggio_byte = messaggio_byte.decode()
+    except UnicodeDecodeError:
+        return {}
     name = "{}{}{}{}{}{}{}{}{}{}{}{}".format(messaggio_byte[0],messaggio_byte[1],messaggio_byte[2],messaggio_byte[3],
                                            messaggio_byte[4],messaggio_byte[5],messaggio_byte[6],
                                            messaggio_byte[7],messaggio_byte[8],messaggio_byte[9],
@@ -57,7 +69,10 @@ def team_name_left(address, messaggio_byte):
 
 def team_name_right(address, messaggio_byte):
     # [0x93] = 147  - Team Names (14 bytes)
-    messaggio_byte = messaggio_byte.decode()
+    try:
+        messaggio_byte = messaggio_byte.decode()
+    except UnicodeDecodeError:
+        return {}
     name = "{}{}{}{}{}{}{}{}{}{}{}{}".format(messaggio_byte[0],messaggio_byte[1],messaggio_byte[2],messaggio_byte[3],
                                            messaggio_byte[4],messaggio_byte[5],messaggio_byte[6],
                                            messaggio_byte[7],messaggio_byte[8],messaggio_byte[9],
@@ -117,4 +132,5 @@ def controlla_copia():
     if s != conf:
         raise NameError('Copia non autorizzata!')
     print('programma regolare grazie!')
+    return True
 
